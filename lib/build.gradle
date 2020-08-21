@@ -1,0 +1,11 @@
+import com.rongc.plugin.config.Deps
+apply plugin: 'com.rongc.lib'
+ext {
+    navigationVersion='2.3.0'
+}
+
+dependencies {
+    api "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    api "androidx.navigation:navigation-ui-ktx:$navigationVersion"
+    implementation Deps.Lib.Gson
+}
