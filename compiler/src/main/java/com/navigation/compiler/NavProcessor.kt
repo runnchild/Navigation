@@ -74,7 +74,7 @@ class NavProcessor : AbstractProcessor() {
         //resourcePath=/D:/StudioProjects/Sign/Home/lib/build/tmp/kapt3/classes/debug/destination
         val appPath = resourcePath?.substring(0, resourcePath.indexOf("build"))
         val assetsPath = appPath.plus("src/main/assets/destination/")
-        messager?.printMessage(Diagnostic.Kind.NOTE, "resourcePath=$assetsPath")
+        messager?.printMessage(Diagnostic.Kind.NOTE, "resourcePath=$resourcePath")
 
         if (destMap.isNotEmpty()) {
             writeToFile(assetsPath, destMap)
@@ -82,13 +82,14 @@ class NavProcessor : AbstractProcessor() {
         if (tabDestMap.isNotEmpty()) {
             writeToFile("${assetsPath}/tab", tabDestMap)
         }
-        makeType(destMap, tabDestMap)
+        makeType(destMap, tabDestMap, appPath)
         return false
     }
 
     private fun makeType(
         destMap: MutableMap<String, JsonObject>,
-        tabDestMap: MutableMap<String, JsonObject>
+        tabDestMap: MutableMap<String, JsonObject>,
+        appPath: String?
     ) {
         val main = MethodSpec.methodBuilder("main")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -97,7 +98,11 @@ class NavProcessor : AbstractProcessor() {
             .addStatement("\$T.out.println(\$S)", System::class.java, "Hello, JavaPoet!")
             .build()
 
-        val helloWorld = TypeSpec.interfaceBuilder("${moduleName}Navigator")
+        var moduleName = moduleName
+        moduleName = moduleName!!.first().toUpperCase().plus(moduleName.substring(1, moduleName.length))
+        println("module Name == $moduleName")
+        val clazName = "${moduleName}Navigator"
+        val helloWorld = TypeSpec.interfaceBuilder(clazName)
             .addModifiers(Modifier.PUBLIC)
 //            .addMethod(main)
             .apply {
@@ -127,9 +132,15 @@ class NavProcessor : AbstractProcessor() {
             }
             .build()
 
-        val javaFile = JavaFile.builder("com.psnlove.navigator", helloWorld)
+        val javaFile = JavaFile.builder("com.rongc.navigator", helloWorld)
             .build()
-        javaFile.writeTo(System.out)
+
+        val path = filer?.createResource(
+            StandardLocation.SOURCE_OUTPUT, "",
+            "java"
+        )?.toUri()?.path!!
+        println("path === ${path}")
+        javaFile.writeTo(File(path.substring(0, path.indexOf("java"))))
     }
 
     private fun writeToFile(
