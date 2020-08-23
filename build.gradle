@@ -2,14 +2,12 @@
 buildscript {
     apply from: "https://gitee.com/qiurongc/codes/s3wgd76acpzm8bx5fo49u32/raw?blob_name=config.gradle"
     repositories {
-        maven {
-            url uri("${rootProject.projectDir.parent}/repo/")
-        }
+        mavenLocal()
         google()
         jcenter()
     }
     dependencies {
-        classpath classpaths
+        classpath classpaths, bintrayPlugin
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -17,9 +15,7 @@ buildscript {
 
 allprojects {
     repositories {
-        maven {
-            url uri("${rootProject.projectDir.parent}/repo/")
-        }
+        mavenLocal()
         google()
         jcenter()
     }
