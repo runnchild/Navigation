@@ -106,29 +106,8 @@ class NavProcessor : AbstractProcessor() {
             .addModifiers(Modifier.PUBLIC)
 //            .addMethod(main)
             .apply {
-                destMap.keys.forEach {
-                    var toPath = ""
-                    val split = it.substring(1, it.length).split("/")
-                    val size = split.size
-                    split.forEachIndexed { index, path ->
-                        toPath += path.toUpperCase(Locale.getDefault()) + if (size > 1 && index < size - 1) {
-                            "_"
-                        } else ""
-                    }
-                    val field = FieldSpec.builder(
-                        String::class.java,
-                        toPath,
-                        Modifier.PUBLIC,
-                        Modifier.STATIC,
-                        Modifier.FINAL
-                    ).initializer(""""$it"""").build()
-
-                    try {
-                        addField(field)
-                    } catch (e: Exception) {
-                        println(e.message)
-                    }
-                }
+                generateType(destMap)
+                generateType(tabDestMap)
             }
             .build()
 
@@ -141,6 +120,32 @@ class NavProcessor : AbstractProcessor() {
         )?.toUri()?.path!!
         println("path === ${path}")
         javaFile.writeTo(File(path.substring(0, path.indexOf("java"))))
+    }
+
+    private fun TypeSpec.Builder.generateType(destMap: MutableMap<String, JsonObject>) {
+        destMap.keys.forEach {
+            var toPath = ""
+            val split = it.substring(1, it.length).split("/")
+            val size = split.size
+            split.forEachIndexed { index, path ->
+                toPath += path.toUpperCase(Locale.getDefault()) + if (size > 1 && index < size - 1) {
+                    "_"
+                } else ""
+            }
+            val field = FieldSpec.builder(
+                    String::class.java,
+                    toPath,
+                    Modifier.PUBLIC,
+                    Modifier.STATIC,
+                    Modifier.FINAL
+            ).initializer("http://$it").build()
+
+            try {
+                addField(field)
+            } catch (e: Exception) {
+                println(e.message)
+            }
+        }
     }
 
     private fun writeToFile(
@@ -240,9 +245,10 @@ class NavProcessor : AbstractProcessor() {
             null
         } else {
             val jsonObject = JsonObject()
-            jsonObject.addProperty("id", abs(clzName.hashCode()))
+            val uri = "http://$url"
+            jsonObject.addProperty("id", abs(uri.hashCode()))
             jsonObject.addProperty("className", clzName)
-            jsonObject.addProperty("url", "http://$url")
+            jsonObject.addProperty("url", uri)
             jsonObject.addProperty("needLogin", needLogin)
             jsonObject.addProperty("isStarter", isStarter)
             jsonObject.addProperty("isFragment", isFragment)
