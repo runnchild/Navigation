@@ -6,5 +6,6 @@ annotation class FragmentDestination(
     val url: String,
     val needLogin: Boolean = false,
     val isStarter: Boolean = false,
-    val isHomeTab: Boolean = false
+    val isHomeTab: Boolean = false,
+    val doc: String = ""
 )

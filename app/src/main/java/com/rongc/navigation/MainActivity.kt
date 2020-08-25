@@ -7,8 +7,9 @@ import androidx.navigation.findNavController
 import com.navigation.annotation.FragmentDestination
 import com.navigation.navigation.NavGraphBuilder
 import com.rongc.navigation.databinding.ActivityMainBinding
+import com.rongc.navigator.NavigationNavigator
 
-@FragmentDestination(url = "/navigation/main", isStarter = true)
+@FragmentDestination(url = "/navigation/main", isStarter = true, doc = "首页")
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,5 +23,6 @@ class MainActivity : AppCompatActivity() {
             containerView.findNavController(),
             containerView.id
         )
+//        NavigationNavigator
     }
 }
