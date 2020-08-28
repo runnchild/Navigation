@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.*
+import androidx.navigation.fragment.FragmentNavigator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader

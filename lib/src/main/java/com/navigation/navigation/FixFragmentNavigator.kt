@@ -9,6 +9,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
+import com.rongc.navigation.R
 import java.util.*
 
 @Navigator.Name("fixFragment")
@@ -53,6 +54,20 @@ class FixFragmentNavigator(
         }
 
         val ft = mFragmentManager.beginTransaction()
+
+        var enterAnim = navOptions?.enterAnim ?: R.anim.slide_enter
+        var exitAnim = navOptions?.exitAnim ?:R.anim.slide_exit
+        var popEnterAnim = navOptions?.popEnterAnim ?: R.anim.slide_pop_enter
+        var popExitAnim = navOptions?.popExitAnim ?: R.anim.slide_pop_exit
+
+        if (enterAnim != -1 || exitAnim != -1 || popEnterAnim != -1 || popExitAnim != -1) {
+            enterAnim = if (enterAnim != -1) enterAnim else 0
+            exitAnim = if (exitAnim != -1) exitAnim else 0
+            popEnterAnim = if (popEnterAnim != -1) popEnterAnim else 0
+            popExitAnim = if (popExitAnim != -1) popExitAnim else 0
+            ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
+        }
+
         var frag = mFragmentManager.primaryNavigationFragment
         frag?.let {
             ft.hide(it)
@@ -65,19 +80,6 @@ class FixFragmentNavigator(
                 ft.add(mContainerId, this, tag)
                 frag = this
             }
-
-        var enterAnim = navOptions?.enterAnim ?: -1
-        var exitAnim = navOptions?.exitAnim ?: -1
-        var popEnterAnim = navOptions?.popEnterAnim ?: -1
-        var popExitAnim = navOptions?.popExitAnim ?: -1
-        if (enterAnim != -1 || exitAnim != -1 || popEnterAnim != -1 || popExitAnim != -1) {
-            enterAnim = if (enterAnim != -1) enterAnim else 0
-            exitAnim = if (exitAnim != -1) exitAnim else 0
-            popEnterAnim = if (popEnterAnim != -1) popEnterAnim else 0
-            popExitAnim = if (popExitAnim != -1) popExitAnim else 0
-            ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
-        }
-
 //        ft.replace(mContainerId, frag)
         ft.setPrimaryNavigationFragment(frag)
 
