@@ -105,7 +105,7 @@ object NavGraphBuilder {
         path: String
     ): HashMap<String, Destination>? {
         val stringBuilder = StringBuilder()
-        val list = context.assets.list(path)
+        val list = context.assets.list(path)?.filter { it.endsWith(".json") }
         list?.forEachIndexed { index, it ->
             var parse = parse(context, "$path/$it")
             if (index > 0) {
