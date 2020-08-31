@@ -16,7 +16,7 @@ import com.navigation.annotation.FragmentDestination
  * @date 20-8-28$
  * @update
  */
-@FragmentDestination("/navigation/two")
+@FragmentDestination("navigation/two", popAnim = true)
 class TwoFragment: Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,

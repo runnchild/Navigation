@@ -7,7 +7,6 @@ import com.navigation.annotation.ActivityDestination
 import com.navigation.annotation.FragmentDestination
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
-import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
 import java.io.File
 import java.io.FileOutputStream
@@ -47,8 +46,8 @@ class NavProcessor : AbstractProcessor() {
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(
-                ActivityDestination::class.java.canonicalName,
-                FragmentDestination::class.java.canonicalName
+            ActivityDestination::class.java.canonicalName,
+            FragmentDestination::class.java.canonicalName
         )
     }
 
@@ -64,8 +63,8 @@ class NavProcessor : AbstractProcessor() {
         val resource: FileObject?
         try {
             resource = filer?.createResource(
-                    StandardLocation.CLASS_OUTPUT, "",
-                    outPutName
+                StandardLocation.CLASS_OUTPUT, "",
+                outPutName
             )
         } catch (e: Exception) {
             return false
@@ -82,41 +81,34 @@ class NavProcessor : AbstractProcessor() {
         if (tabDestMap.isNotEmpty()) {
             writeToFile("${assetsPath}/tab", tabDestMap)
         }
-        makeType(destMap, tabDestMap, appPath)
+        makeType(destMap, tabDestMap)
         return false
     }
 
     private fun makeType(
-            destMap: MutableMap<String, JsonObject>,
-            tabDestMap: MutableMap<String, JsonObject>,
-            appPath: String?
+        destMap: MutableMap<String, JsonObject>,
+        tabDestMap: MutableMap<String, JsonObject>
     ) {
-        val main = MethodSpec.methodBuilder("main")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(Void.TYPE)
-                .addParameter(Array<String>::class.java, "args")
-                .addStatement("\$T.out.println(\$S)", System::class.java, "Hello, JavaPoet!")
-                .build()
-
         var moduleName = moduleName
-        moduleName = moduleName!!.first().toUpperCase().plus(moduleName.substring(1, moduleName.length))
+        moduleName =
+            moduleName!!.first().toUpperCase().plus(moduleName.substring(1, moduleName.length))
         println("module Name == $moduleName")
         val clazName = "${moduleName}Navigator"
         val helloWorld = TypeSpec.interfaceBuilder(clazName)
-                .addModifiers(Modifier.PUBLIC)
+            .addModifiers(Modifier.PUBLIC)
 //            .addMethod(main)
-                .apply {
-                    generateType(destMap)
-                    generateType(tabDestMap)
-                }
-                .build()
+            .apply {
+                generateType(destMap)
+                generateType(tabDestMap)
+            }
+            .build()
 
         val javaFile = JavaFile.builder("com.rongc.navigator", helloWorld)
-                .build()
+            .build()
 
         val path = filer?.createResource(
-                StandardLocation.SOURCE_OUTPUT, "",
-                "java"
+            StandardLocation.SOURCE_OUTPUT, "",
+            "java"
         )?.toUri()?.path!!
 //        println("path === ${path}")
         javaFile.writeTo(File(path.substring(0, path.indexOf("java"))))
@@ -125,22 +117,27 @@ class NavProcessor : AbstractProcessor() {
     private fun TypeSpec.Builder.generateType(destMap: MutableMap<String, JsonObject>) {
         destMap.keys.forEach {
             var toPath = ""
-            val split = it.substring(1, it.length).split("/")
+            val split = it.split("/")
             val size = split.size
             split.forEachIndexed { index, path ->
                 toPath += path.toUpperCase(Locale.getDefault()) + if (size > 1 && index < size - 1) {
                     "_"
                 } else ""
             }
+            // 如果没有设置doc，去title作为注释
+            val doc =
+                destMap[it]?.getAsJsonPrimitive("doc")?.asString ?: destMap[it]?.getAsJsonPrimitive(
+                    "title"
+                )?.asString
             val field = FieldSpec.builder(
-                    String::class.java,
-                    toPath,
-                    Modifier.PUBLIC,
-                    Modifier.STATIC,
-                    Modifier.FINAL
+                String::class.java,
+                toPath,
+                Modifier.PUBLIC,
+                Modifier.STATIC,
+                Modifier.FINAL
             ).initializer("\"http://$it\"")
-                    .addJavadoc(destMap[it]!!.getAsJsonPrimitive("doc").asString)
-                    .build()
+                .addJavadoc(doc)
+                .build()
 
             try {
                 addField(field)
@@ -150,17 +147,14 @@ class NavProcessor : AbstractProcessor() {
         }
     }
 
-    private fun writeToFile(
-            assetsPath: String,
-            destMap: MutableMap<String, JsonObject>
-    ) {
+    private fun writeToFile(assetsPath: String, destMap: MutableMap<String, JsonObject>) {
         val outputDir = File(assetsPath)
         if (!outputDir.exists()) {
             outputDir.mkdirs()
         }
         val outFile = File(
-                outputDir,
-                outPutName
+            outputDir,
+            outPutName
         )
         if (outFile.exists()) {
             outFile.delete()
@@ -189,23 +183,25 @@ class NavProcessor : AbstractProcessor() {
     }
 
     private fun handleFragmentElements(
-            fragmentElements: MutableSet<out Element>?,
-            destMap: MutableMap<String, JsonObject>,
-            tabDestMap: MutableMap<String, JsonObject>
+        fragmentElements: MutableSet<out Element>?,
+        destMap: MutableMap<String, JsonObject>,
+        tabDestMap: MutableMap<String, JsonObject>
     ) {
         fragmentElements?.forEach {
             it as TypeElement
             val annotation = it.getAnnotation(FragmentDestination::class.java)
 
             addObj(
-                    destMap,
-                    it.qualifiedName.toString(),
-                    annotation.url,
-                    annotation.needLogin,
-                    annotation.isStarter,
-                    true,
-                    annotation.isHomeTab,
-                    annotation.doc
+                destMap,
+                it.qualifiedName.toString(),
+                annotation.url,
+                annotation.needLogin,
+                annotation.isStarter,
+                true,
+                annotation.isHomeTab,
+                annotation.doc,
+                annotation.title,
+                annotation.popAnim
             )?.let { jsonObj ->
                 if (annotation.isHomeTab) {
                     tabDestMap[annotation.url] = jsonObj
@@ -216,34 +212,38 @@ class NavProcessor : AbstractProcessor() {
     }
 
     private fun handleActivityElements(
-            activityElements: MutableSet<out Element>?, destMap: MutableMap<String, JsonObject>
+        activityElements: MutableSet<out Element>?, destMap: MutableMap<String, JsonObject>
     ) {
         activityElements?.forEach {
             it as TypeElement
             val annotation = it.getAnnotation(ActivityDestination::class.java)
 
             addObj(
-                    destMap,
-                    it.qualifiedName.toString(),
-                    annotation.url,
-                    annotation.needLogin,
-                    annotation.isStarter,
-                    false,
-                    annotation.isHomeTab,
-                    annotation.doc
+                destMap,
+                it.qualifiedName.toString(),
+                annotation.url,
+                annotation.needLogin,
+                annotation.isStarter,
+                false,
+                annotation.isHomeTab,
+                annotation.doc,
+                annotation.title,
+                annotation.popAnim
             )
         }
     }
 
     private fun addObj(
-            destMap: MutableMap<String, JsonObject>,
-            clzName: String,
-            url: String,
-            needLogin: Boolean,
-            isStarter: Boolean,
-            isFragment: Boolean,
-            isHomeTab: Boolean,
-            doc: String
+        destMap: MutableMap<String, JsonObject>,
+        clzName: String,
+        url: String,
+        needLogin: Boolean,
+        isStarter: Boolean,
+        isFragment: Boolean,
+        isHomeTab: Boolean,
+        doc: String,
+        title: String,
+        popAnim: Boolean
     ): JsonObject? {
         return if (destMap.containsKey(url)) {
             messager?.printMessage(Diagnostic.Kind.ERROR, "不同的页面不允许添加相同的url: $url")
@@ -254,6 +254,8 @@ class NavProcessor : AbstractProcessor() {
             jsonObject.addProperty("id", abs(uri.hashCode()))
             jsonObject.addProperty("className", clzName)
             jsonObject.addProperty("url", uri)
+            jsonObject.addProperty("title", title)
+            jsonObject.addProperty("popAnim", popAnim)
             jsonObject.addProperty("needLogin", needLogin)
             jsonObject.addProperty("isStarter", isStarter)
             jsonObject.addProperty("isFragment", isFragment)

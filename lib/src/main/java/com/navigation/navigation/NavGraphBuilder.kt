@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.*
-import androidx.navigation.fragment.FragmentNavigator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -32,7 +31,8 @@ object NavGraphBuilder {
         if (tabDestinations == null) {
             tabDestinations = parseDestinationMap(context, "destination/tab")
         }
-        build(context, controller, containerId, tabDestinations ?: return, intercept)
+        controller.graph =
+            build(context, controller, containerId, tabDestinations ?: return, intercept)
     }
 
     fun buildOther(
@@ -44,7 +44,14 @@ object NavGraphBuilder {
         if (otherDestinations == null) {
             otherDestinations = parseDestinationMap(context, "destination")
         }
-        build(context, controller, containerId, otherDestinations ?: return, intercept)
+
+        val graph = build(context, controller, containerId, otherDestinations ?: return, intercept)
+
+        try {
+            controller.graph
+        } catch (e: IllegalStateException) {
+            controller.graph = graph
+        }
     }
 
     private fun build(
@@ -53,7 +60,7 @@ object NavGraphBuilder {
         containerId: Int,
         destinationMap: HashMap<String, Destination>,
         intercept: ((NavGraph, Destination) -> Unit)?
-    ) {
+    ): NavGraph {
         val provider = controller.navigatorProvider
         val activityNavigator = provider.getNavigator(ActivityNavigator::class.java)
         val fragmentNavigator =
@@ -76,7 +83,12 @@ object NavGraphBuilder {
                     setComponentName(ComponentName(context, it.className))
                 }
             }
-
+            if (it.popAnim) {
+                destination.putAction(it.id, NavAction(it.id, navOptions {
+                    anim(Navigator.popAnim)
+                }))
+            }
+            destination.label = it.title
             destination.id = it.id
             destination.addDeepLink(it.url)
             if (it.isStarter) {
@@ -85,7 +97,7 @@ object NavGraphBuilder {
             intercept?.invoke(navGraph, it)
             navGraph.addDestination(destination)
         }
-        controller.graph = navGraph
+        return navGraph
     }
 
     private fun parseDestinationMap(

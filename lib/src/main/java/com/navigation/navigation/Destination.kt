@@ -7,4 +7,6 @@ class Destination(val url: String) {
     var isFragment = false
     var className: String= ""
     var isHomeTab = false
+    var title: String = ""
+    var popAnim = false
 }

@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.navigation.annotation.FragmentDestination
+import com.navigation.navigation.Navigator.navigate
 import com.rongc.navigator.NavigationNavigator
 
 /**
@@ -18,7 +19,7 @@ import com.rongc.navigator.NavigationNavigator
  * @date 20-8-28$
  * @update
  */
-@FragmentDestination("/navigation/one", isStarter = true)
+@FragmentDestination("navigation/one", isStarter = true)
 class OneFragment : Fragment() {
 
 //    override fun onCreateView(
@@ -46,7 +47,7 @@ class OneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<View>(R.id.tv_btn).setOnClickListener {
-            findNavController().navigate(-NavigationNavigator.NAVIGATION_TWO.hashCode())
+            findNavController().navigate(NavigationNavigator.NAVIGATION_TWO)
         }
     }
 }

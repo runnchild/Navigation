@@ -18,13 +18,16 @@ class MainActivity : AppCompatActivity() {
 
         val container = supportFragmentManager.findFragmentById(R.id.containerView) as NavHostFragment
 
-        val containerView = binding.containerView
+        NavGraphBuilder.buildTab(
+            this,
+            container.findNavController(),
+            R.id.containerView
+        )
+
         NavGraphBuilder.buildOther(
             this,
             container.findNavController(),
-            containerView.id
+            R.id.containerView
         )
-
-//        NavigationNavigator
     }
 }
