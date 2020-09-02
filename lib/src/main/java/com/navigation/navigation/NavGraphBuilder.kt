@@ -22,6 +22,24 @@ object NavGraphBuilder {
     var tabDestinations: HashMap<String, Destination>? = null
     var otherDestinations: HashMap<String, Destination>? = null
 
+    fun build(
+        context: FragmentActivity,
+        controller: NavController,
+        containerId: Int,
+        intercept: ((NavGraph, Destination) -> Unit)? = null
+    ) {
+        val mutableMapOf = mutableMapOf<String, Destination>()
+        if (tabDestinations == null) {
+            tabDestinations = parseDestinationMap(context, "destination/tab")
+        }
+        if (otherDestinations == null) {
+            otherDestinations = parseDestinationMap(context, "destination")
+        }
+        mutableMapOf.putAll(tabDestinations!!)
+        mutableMapOf.putAll(otherDestinations!!)
+        controller.graph = build(context, controller, containerId, mutableMapOf, intercept)
+    }
+
     fun buildTab(
         context: FragmentActivity,
         controller: NavController,
@@ -58,7 +76,7 @@ object NavGraphBuilder {
         context: FragmentActivity,
         controller: NavController,
         containerId: Int,
-        destinationMap: HashMap<String, Destination>,
+        destinationMap: Map<String, Destination>,
         intercept: ((NavGraph, Destination) -> Unit)?
     ): NavGraph {
         val provider = controller.navigatorProvider
