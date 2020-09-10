@@ -5,7 +5,9 @@ ext {
 }
 
 dependencies {
-    api "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    api ("androidx.navigation:navigation-fragment-ktx:$navigationVersion") {
+        exclude group: 'androidx.fragment'
+    }
     api "androidx.navigation:navigation-ui-ktx:$navigationVersion"
     implementation Deps.Lib.Gson
 }
