@@ -5,6 +5,7 @@ import androidx.navigation.AnimBuilder
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.Navigator
 import com.rongc.navigation.R
 import kotlin.math.abs
 
@@ -16,8 +17,8 @@ import kotlin.math.abs
  */
 object Navigator {
 
-    fun NavController.navigate(url: String, args: Bundle? = null, options: NavOptions? = null) {
-        navigate(url.destId(), args, options)
+    fun NavController.navigate(url: String, args: Bundle? = null, options: NavOptions? = null, navExtras: Navigator.Extras? = null) {
+        navigate(url.destId(), args, options, navExtras)
     }
 
     /**
