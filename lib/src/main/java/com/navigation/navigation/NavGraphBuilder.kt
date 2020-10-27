@@ -35,8 +35,12 @@ object NavGraphBuilder {
         if (otherDestinations == null) {
             otherDestinations = parseDestinationMap(context, "destination")
         }
-        mutableMapOf.putAll(tabDestinations!!)
-        mutableMapOf.putAll(otherDestinations!!)
+        tabDestinations?.let {
+            mutableMapOf.putAll(it)
+        }
+        otherDestinations?.let {
+            mutableMapOf.putAll(it)
+        }
         controller.graph = build(context, controller, containerId, mutableMapOf, intercept)
     }
 
