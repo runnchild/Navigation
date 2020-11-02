@@ -93,7 +93,11 @@ class NavProcessor : AbstractProcessor() {
         moduleName =
             moduleName!!.first().toUpperCase().plus(moduleName.substring(1, moduleName.length))
         println("module Name == $moduleName")
-        val clazName = "${moduleName}Navigator"
+        val clazName = if (projectName == "app") {
+            "${moduleName}AppNavigator"
+        } else {
+            "${moduleName}Navigator"
+        }
         val helloWorld = TypeSpec.interfaceBuilder(clazName)
             .addModifiers(Modifier.PUBLIC)
 //            .addMethod(main)
