@@ -80,8 +80,8 @@ class FixFragmentNavigator(
                 ft.add(mContainerId, this, tag)
                 frag = this
             }
-//        ft.replace(mContainerId, frag)
         ft.setPrimaryNavigationFragment(frag)
+        ft.show(frag!!)
 
         @IdRes val destId = destination.id
         val initialNavigation = mBackStack.isEmpty()
@@ -108,6 +108,9 @@ class FixFragmentNavigator(
                     )
                     ft.addToBackStack(generateBackStackName(mBackStack.size, destId))
                 }
+                false
+            }
+            NavGraphBuilder.isTab(destId) -> {
                 false
             }
             else -> {

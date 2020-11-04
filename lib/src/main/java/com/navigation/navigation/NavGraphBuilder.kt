@@ -41,7 +41,11 @@ object NavGraphBuilder {
         otherDestinations?.let {
             mutableMapOf.putAll(it)
         }
-        controller.graph = build(context, controller, containerId, mutableMapOf, intercept)
+        controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
+            if (startDestination == 0) {
+                startDestination = tabDestinations!!.values.first().id
+            }
+        }
     }
 
     fun buildTab(
@@ -166,5 +170,14 @@ object NavGraphBuilder {
         }
 
         return sb.toString()
+    }
+
+    fun isTab(id: Int): Boolean {
+        return tabDestinations?.values?.firstOrNull { it.id == id }?.isHomeTab ?: false
+    }
+
+    fun findCustomDestination(id: Int): Destination? {
+        return tabDestinations?.values?.firstOrNull { id == it.id }
+            ?: otherDestinations?.values?.firstOrNull { id == it.id }
     }
 }
