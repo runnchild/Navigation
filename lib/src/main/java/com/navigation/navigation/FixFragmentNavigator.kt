@@ -56,7 +56,7 @@ class FixFragmentNavigator(
         val ft = mFragmentManager.beginTransaction()
 
         var enterAnim = navOptions?.enterAnim ?: R.anim.slide_enter
-        var exitAnim = navOptions?.exitAnim ?:R.anim.slide_exit
+        var exitAnim = navOptions?.exitAnim ?: R.anim.slide_exit
         var popEnterAnim = navOptions?.popEnterAnim ?: R.anim.slide_pop_enter
         var popExitAnim = navOptions?.popExitAnim ?: R.anim.slide_pop_exit
 
@@ -72,14 +72,20 @@ class FixFragmentNavigator(
         frag?.let {
             ft.hide(it)
         }
+        mFragmentManager.fragments.forEach {
+            ft.hide(it)
+        }
         val tag = destination.id.toString()
         @Suppress("DEPRECATION")
-        frag = mFragmentManager.findFragmentByTag(tag)
-            ?: instantiateFragment(mContext, mFragmentManager, className, args).apply {
-                arguments = args
-                ft.add(mContainerId, this, tag)
-                frag = this
+        frag = mFragmentManager.findFragmentByTag(tag).apply {
+            args?.let {
+                this?.arguments = it
             }
+        } ?: instantiateFragment(mContext, mFragmentManager, className, args).apply {
+            arguments = args
+            ft.add(mContainerId, this, tag)
+            frag = this
+        }
         ft.setPrimaryNavigationFragment(frag)
         ft.show(frag!!)
 
@@ -136,5 +142,24 @@ class FixFragmentNavigator(
 
     private fun generateBackStackName(backStackIndex: Int, destId: Int): String {
         return "$backStackIndex-$destId"
+    }
+
+    override fun popBackStack(): Boolean {
+        if (mBackStack.isEmpty()) {
+            return false
+        }
+        if (manager.isStateSaved) {
+            Log.i(
+                "FragmentNavigator", "Ignoring popBackStack() call: FragmentManager has already"
+                        + " saved its state"
+            )
+            return false
+        }
+        manager.popBackStack(
+            generateBackStackName(mBackStack.size, mBackStack.peekLast()),
+            FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
+        mBackStack.removeLast()
+        return true
     }
 }
