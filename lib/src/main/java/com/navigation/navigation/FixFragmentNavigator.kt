@@ -96,6 +96,8 @@ class FixFragmentNavigator(
                 && navOptions.shouldLaunchSingleTop()
                 && mBackStack.peekLast() == destId)
 
+//        val isSingleTab = !initialNavigation && NavGraphBuilder.isTab(mBackStack.peekLast()!!) && NavGraphBuilder.isTab(destId)
+
         val isAdded: Boolean
         isAdded = when {
             initialNavigation -> {
@@ -144,22 +146,22 @@ class FixFragmentNavigator(
         return "$backStackIndex-$destId"
     }
 
-    override fun popBackStack(): Boolean {
-        if (mBackStack.isEmpty()) {
-            return false
-        }
-        if (manager.isStateSaved) {
-            Log.i(
-                "FragmentNavigator", "Ignoring popBackStack() call: FragmentManager has already"
-                        + " saved its state"
-            )
-            return false
-        }
-        manager.popBackStack(
-            generateBackStackName(mBackStack.size, mBackStack.peekLast()),
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
-        mBackStack.removeLast()
-        return true
-    }
+//    override fun popBackStack(): Boolean {
+//        if (mBackStack.isEmpty()) {
+//            return false
+//        }
+//        if (manager.isStateSaved) {
+//            Log.i(
+//                "FragmentNavigator", "Ignoring popBackStack() call: FragmentManager has already"
+//                        + " saved its state"
+//            )
+//            return false
+//        }
+//        manager.popBackStack(
+//            generateBackStackName(mBackStack.size, mBackStack.peekLast()),
+//            FragmentManager.POP_BACK_STACK_INCLUSIVE
+//        )
+//        mBackStack.removeLast()
+//        return true
+//    }
 }

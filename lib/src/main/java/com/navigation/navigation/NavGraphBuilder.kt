@@ -43,7 +43,8 @@ object NavGraphBuilder {
         }
         controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
             if (startDestination == 0) {
-                startDestination = tabDestinations!!.values.first().id
+                startDestination = tabDestinations?.values?.firstOrNull()?.id
+                    ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
             }
         }
     }
