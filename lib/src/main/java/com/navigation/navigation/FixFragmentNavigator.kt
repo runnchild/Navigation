@@ -119,7 +119,7 @@ class FixFragmentNavigator(
                 false
             }
             isTab -> {
-                true
+                mFragmentManager.findFragmentByTag(tag) == null
             }
             else -> {
                 ft.addToBackStack(generateBackStackName(mBackStack.size + 1, destId))
@@ -135,9 +135,9 @@ class FixFragmentNavigator(
         ft.commit()
         // The commit succeeded, update our view of the world
         return if (isAdded) {
-            if (isTab && mBackStack.size > 1 && NavGraphBuilder.isTab(mBackStack.peekLast()?:0)) {
-                mBackStack.removeLast()
-            }
+//            if (isTab && mBackStack.size > 1 && NavGraphBuilder.isTab(mBackStack.peekLast()?:0)) {
+//                mBackStack.removeLast()
+//            }
             mBackStack.add(destId)
             destination
         } else {
