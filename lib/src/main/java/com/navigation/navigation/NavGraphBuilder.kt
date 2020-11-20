@@ -104,17 +104,33 @@ object NavGraphBuilder {
             val destination: NavDestination = if (it.isFragment) {
                 fragmentNavigator.createDestination().apply {
                     className = it.className
+
+                    val anim = when (it.animStyle) {
+                        ANIM_NON -> {
+                            Navigator.nonAnim
+                        }
+                        0, ANIM_DEFAULT -> {
+                            Navigator.slideAnim
+                        }
+                        ANIM_POP -> {
+                            Navigator.popAnim
+                        }
+                        else -> if (it.popAnim) {
+                            Navigator.popAnim
+                        } else {
+                            Navigator.slideAnim
+                        }
+                    }
+                    putAction(it.id, NavAction(it.id, navOptions {
+                        anim(anim)
+                    }))
                 }
             } else {
                 activityNavigator.createDestination().apply {
                     setComponentName(ComponentName(context, it.className))
                 }
             }
-            if (it.popAnim) {
-                destination.putAction(it.id, NavAction(it.id, navOptions {
-                    anim(Navigator.popAnim)
-                }))
-            }
+
             destination.label = it.title
             destination.id = it.id
             destination.addDeepLink(it.url)

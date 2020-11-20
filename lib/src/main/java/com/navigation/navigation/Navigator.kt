@@ -50,8 +50,14 @@ object Navigator {
 
     val popAnim: AnimBuilder.() -> Unit = {
         enter = R.anim.pop_enter
-        exit = R.anim.pop_exit
-        popEnter = R.anim.pop_pop_enter
+        exit = 0//R.anim.pop_exit
+        popEnter = 0//R.anim.pop_pop_enter
         popExit = R.anim.pop_pop_exit
+    }
+    val nonAnim: AnimBuilder.() -> Unit = {
+        enter = 0
+        exit = 0
+        popEnter = 0
+        popExit = 0
     }
 }

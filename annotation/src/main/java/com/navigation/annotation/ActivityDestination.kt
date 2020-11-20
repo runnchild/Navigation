@@ -18,5 +18,9 @@ annotation class ActivityDestination(
     /**
      * 页面打开动画，默认slide， true 为pop
      */
-    val popAnim:Boolean = false
+    val popAnim:Boolean = false,
+    /**
+     * one of #{ANIM_NON, ANIM_DEFAULT, ANIM_POP}
+     */
+    val animStyle:Int
 )

@@ -55,10 +55,11 @@ class FixFragmentNavigator(
 
         val ft = mFragmentManager.beginTransaction()
 
-        var enterAnim = navOptions?.enterAnim ?: R.anim.slide_enter
-        var exitAnim = navOptions?.exitAnim ?: R.anim.slide_exit
-        var popEnterAnim = navOptions?.popEnterAnim ?: R.anim.slide_pop_enter
-        var popExitAnim = navOptions?.popExitAnim ?: R.anim.slide_pop_exit
+        val options = navOptions ?: destination.getAction(destination.id)?.navOptions
+        var enterAnim = options?.enterAnim ?: R.anim.slide_enter
+        var exitAnim = options?.exitAnim ?: R.anim.slide_exit
+        var popEnterAnim = options?.popEnterAnim ?: R.anim.slide_pop_enter
+        var popExitAnim = options?.popExitAnim ?: R.anim.slide_pop_exit
 
         if (enterAnim != -1 || exitAnim != -1 || popEnterAnim != -1 || popExitAnim != -1) {
             enterAnim = if (enterAnim != -1) enterAnim else 0
@@ -72,9 +73,10 @@ class FixFragmentNavigator(
         frag?.let {
             ft.hide(it)
         }
-        mFragmentManager.fragments.forEach {
-            ft.hide(it)
-        }
+//        mFragmentManager.fragments.forEach {
+//            ft.hide(it)
+//        }
+
         val tag = destination.id.toString()
         @Suppress("DEPRECATION")
         frag = mFragmentManager.findFragmentByTag(tag).apply {
@@ -92,8 +94,8 @@ class FixFragmentNavigator(
         @IdRes val destId = destination.id
         val initialNavigation = mBackStack.isEmpty()
         // TODO Build first class singleTop behavior for fragments
-        val isSingleTopReplacement = (navOptions != null && !initialNavigation
-                && navOptions.shouldLaunchSingleTop()
+        val isSingleTopReplacement = (options != null && !initialNavigation
+                && options.shouldLaunchSingleTop()
                 && mBackStack.peekLast() == destId)
 
         val isTab = NavGraphBuilder.isTab(destId)

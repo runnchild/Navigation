@@ -18,5 +18,9 @@ annotation class FragmentDestination(
     /**
      * 页面打开动画，默认slide， true 为pop
      */
-    val popAnim:Boolean = false
+    val popAnim:Boolean = false,
+    /**
+     * ANIMATE_NON, ANIMATE_DEFAULT, ANIMATE_POP
+     */
+    val animStyle:Int
 )
