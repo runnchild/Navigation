@@ -1,6 +1,7 @@
 package com.navigation.navigation
 
 import android.os.Bundle
+import androidx.annotation.Keep
 import androidx.navigation.AnimBuilder
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
@@ -15,6 +16,7 @@ import kotlin.math.abs
  * @date 20-8-28$
  * @update
  */
+@Keep
 object Navigator {
 
     fun NavController.navigate(url: String, args: Bundle? = null, options: NavOptions? = null, navExtras: Navigator.Extras? = null) {

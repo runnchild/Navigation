@@ -22,5 +22,5 @@ annotation class ActivityDestination(
     /**
      * one of #{ANIM_NON, ANIM_DEFAULT, ANIM_POP}
      */
-    val animStyle:Int
+    val animStyle:Int = 2
 )

@@ -26,7 +26,7 @@ object NavGraphBuilder {
         context: FragmentActivity,
         controller: NavController,
         containerId: Int,
-        intercept: ((NavGraph, Destination) -> Unit)? = null
+        intercept: ((NavGraph, NavDestination) -> Unit)? = null
     ) {
         val mutableMapOf = mutableMapOf<String, Destination>()
         if (tabDestinations == null) {
@@ -53,7 +53,7 @@ object NavGraphBuilder {
         context: FragmentActivity,
         controller: NavController,
         containerId: Int,
-        intercept: ((NavGraph, Destination) -> Unit)? = null
+        intercept: ((NavGraph, NavDestination) -> Unit)? = null
     ) {
         if (tabDestinations == null) {
             tabDestinations = parseDestinationMap(context, "destination/tab")
@@ -66,7 +66,7 @@ object NavGraphBuilder {
         context: FragmentActivity,
         controller: NavController,
         containerId: Int,
-        intercept: ((NavGraph, Destination) -> Unit)? = null
+        intercept: ((NavGraph, NavDestination) -> Unit)? = null
     ) {
         if (otherDestinations == null) {
             otherDestinations = parseDestinationMap(context, "destination")
@@ -86,7 +86,7 @@ object NavGraphBuilder {
         controller: NavController,
         containerId: Int,
         destinationMap: Map<String, Destination>,
-        intercept: ((NavGraph, Destination) -> Unit)?
+        intercept: ((NavGraph, NavDestination) -> Unit)?
     ): NavGraph {
         val provider = controller.navigatorProvider
         val activityNavigator = provider.getNavigator(ActivityNavigator::class.java)
@@ -137,7 +137,7 @@ object NavGraphBuilder {
             if (it.isStarter) {
                 navGraph.startDestination = destination.id
             }
-            intercept?.invoke(navGraph, it)
+            intercept?.invoke(navGraph, destination)
             navGraph.addDestination(destination)
         }
         return navGraph
