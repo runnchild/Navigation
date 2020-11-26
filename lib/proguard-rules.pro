@@ -19,4 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.navigation.** {*;}
+-keepclassmembernames class androidx.navigation.fragment.FragmentNavigator {
+    java.util.ArrayDeque.ArrayDeque mBackStack;
+}

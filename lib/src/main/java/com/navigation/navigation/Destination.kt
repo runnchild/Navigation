@@ -1,5 +1,8 @@
 package com.navigation.navigation
 
+import androidx.annotation.Keep
+
+@Keep
 class Destination(val url: String) {
     var id: Int = 0
     var needLogin = false
