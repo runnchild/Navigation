@@ -9,7 +9,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.NavHostFragment
 import com.rongc.navigation.R
+import java.lang.Thread.sleep
 import java.util.*
 
 @Navigator.Name("fixFragment")
@@ -69,36 +71,51 @@ class FixFragmentNavigator(
             ft.setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
         }
 
-        var frag = mFragmentManager.primaryNavigationFragment
-        frag?.let {
-            ft.hide(it)
-        }
-//        mFragmentManager.fragments.forEach {
-//            ft.hide(it)
-//        }
+        val preFrag = mFragmentManager.primaryNavigationFragment
+        @IdRes val destId = destination.id
 
         val tag = destination.id.toString()
-        @Suppress("DEPRECATION")
-        frag = mFragmentManager.findFragmentByTag(tag).apply {
-            args?.let {
-                this?.arguments = it
-            }
-        } ?: instantiateFragment(mContext, mFragmentManager, className, args).apply {
-            arguments = args
-            ft.add(mContainerId, this, tag)
-            frag = this
-        }
-        ft.setPrimaryNavigationFragment(frag)
-        ft.show(frag!!)
 
-        @IdRes val destId = destination.id
+        @Suppress("DEPRECATION")
+        val frag = (mFragmentManager.findFragmentByTag(tag) ?: instantiateFragment(
+            mContext,
+            mFragmentManager,
+            className,
+            args
+        )).apply {
+            arguments = args
+            if (!isAdded) {
+                ft.add(mContainerId, this, tag)
+            }
+        }
+
+//        val preIsTab = NavGraphBuilder.isTab(preFrag?.tag?.toInt() ?: 0)
+//        if (preIsTab && NavGraphBuilder.isTab(destId)) {
+            preFrag?.let {
+                ft.hide(it)
+            }
+//            ft.show(frag)
+//        } else {
+//            ft.replace(mContainerId, frag)
+//        }
+
+//        if (isTab) {
+//        mFragmentManager.fragments.forEach { if (it !is NavHostFragment) ft.hide(it) }
+        ft.show(frag)
+//        preFrag?.let {
+//            ft.hide(it)
+//        }
+//        } else {
+//            ft.replace(mContainerId, frag, tag)
+//        }
+
+        val isTab = NavGraphBuilder.isTab(destId)
+        ft.setPrimaryNavigationFragment(frag)
         val initialNavigation = mBackStack.isEmpty()
         // TODO Build first class singleTop behavior for fragments
         val isSingleTopReplacement = (options != null && !initialNavigation
                 && options.shouldLaunchSingleTop()
                 && mBackStack.peekLast() == destId)
-
-        val isTab = NavGraphBuilder.isTab(destId)
 
         val isAdded: Boolean
         isAdded = when {
@@ -120,9 +137,18 @@ class FixFragmentNavigator(
                 }
                 false
             }
-            isTab -> {
-                mFragmentManager.findFragmentByTag(tag) == null
-            }
+//            isTab -> {
+//                if (mFragmentManager.findFragmentByTag(tag) != null) {
+////                    mFragmentManager.popBackStackImmediate(
+////                        tag,
+////                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+////                    )
+//                    mBackStack.remove(destId)
+//                }
+//                ft.addToBackStack(tag)
+//                true
+////                mFragmentManager.findFragmentByTag(tag) != null
+//            }
             else -> {
                 ft.addToBackStack(generateBackStackName(mBackStack.size + 1, destId))
                 true
@@ -137,9 +163,6 @@ class FixFragmentNavigator(
         ft.commit()
         // The commit succeeded, update our view of the world
         return if (isAdded) {
-//            if (isTab && mBackStack.size > 1 && NavGraphBuilder.isTab(mBackStack.peekLast()?:0)) {
-//                mBackStack.removeLast()
-//            }
             mBackStack.add(destId)
             destination
         } else {

@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.*
+import androidx.navigation.fragment.FragmentNavigator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -90,9 +91,8 @@ object NavGraphBuilder {
     ): NavGraph {
         val provider = controller.navigatorProvider
         val activityNavigator = provider.getNavigator(ActivityNavigator::class.java)
-        val fragmentNavigator =
-            FixFragmentNavigator(context, context.supportFragmentManager, containerId)
-        provider.addNavigator(fragmentNavigator)
+        val tabNavigator = FixFragmentNavigator(context, context.supportFragmentManager, containerId)
+        provider.addNavigator(tabNavigator)
 
         val navGraph = try {
             controller.graph
@@ -102,7 +102,13 @@ object NavGraphBuilder {
 
         destinationMap.values.forEach {
             val destination: NavDestination = if (it.isFragment) {
-                fragmentNavigator.createDestination().apply {
+                val fn =
+//                    if (isTab(it.id)) {
+                    tabNavigator
+//                } else {
+//                    provider.getNavigator(FragmentNavigator::class.java)
+//                }
+                fn.createDestination().apply {
                     className = it.className
 
                     val anim = when (it.animStyle) {
