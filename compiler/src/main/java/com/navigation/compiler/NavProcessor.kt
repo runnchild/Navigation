@@ -205,7 +205,8 @@ class NavProcessor : AbstractProcessor() {
                 annotation.isHomeTab,
                 annotation.doc,
                 annotation.title,
-                annotation.popAnim
+                annotation.popAnim,
+                annotation.animStyle
             )?.let { jsonObj ->
                 if (annotation.isHomeTab) {
                     tabDestMap[annotation.url] = jsonObj
@@ -232,7 +233,8 @@ class NavProcessor : AbstractProcessor() {
                 annotation.isHomeTab,
                 annotation.doc,
                 annotation.title,
-                annotation.popAnim
+                annotation.popAnim,
+                annotation.animStyle
             )
         }
     }
@@ -247,7 +249,8 @@ class NavProcessor : AbstractProcessor() {
         isHomeTab: Boolean,
         doc: String,
         title: String,
-        popAnim: Boolean
+        popAnim: Boolean,
+        animStyle: Int
     ): JsonObject? {
         return if (destMap.containsKey(url)) {
             messager?.printMessage(Diagnostic.Kind.ERROR, "不同的页面不允许添加相同的url: $url")
@@ -265,6 +268,7 @@ class NavProcessor : AbstractProcessor() {
             jsonObject.addProperty("isFragment", isFragment)
             jsonObject.addProperty("isHomeTab", isHomeTab)
             jsonObject.addProperty("doc", doc)
+            jsonObject.addProperty("animStyle", animStyle)
             destMap[url] = jsonObject
             jsonObject
         }
