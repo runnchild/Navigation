@@ -89,27 +89,12 @@ class FixFragmentNavigator(
             }
         }
 
-//        val preIsTab = NavGraphBuilder.isTab(preFrag?.tag?.toInt() ?: 0)
-//        if (preIsTab && NavGraphBuilder.isTab(destId)) {
-            preFrag?.let {
-                ft.hide(it)
-            }
-//            ft.show(frag)
-//        } else {
-//            ft.replace(mContainerId, frag)
-//        }
-
-//        if (isTab) {
-//        mFragmentManager.fragments.forEach { if (it !is NavHostFragment) ft.hide(it) }
-        ft.show(frag)
 //        preFrag?.let {
 //            ft.hide(it)
 //        }
-//        } else {
-//            ft.replace(mContainerId, frag, tag)
-//        }
+//        ft.show(frag)
+        ft.replace(mContainerId, frag, tag)
 
-        val isTab = NavGraphBuilder.isTab(destId)
         ft.setPrimaryNavigationFragment(frag)
         val initialNavigation = mBackStack.isEmpty()
         // TODO Build first class singleTop behavior for fragments
@@ -137,18 +122,6 @@ class FixFragmentNavigator(
                 }
                 false
             }
-//            isTab -> {
-//                if (mFragmentManager.findFragmentByTag(tag) != null) {
-////                    mFragmentManager.popBackStackImmediate(
-////                        tag,
-////                        FragmentManager.POP_BACK_STACK_INCLUSIVE
-////                    )
-//                    mBackStack.remove(destId)
-//                }
-//                ft.addToBackStack(tag)
-//                true
-////                mFragmentManager.findFragmentByTag(tag) != null
-//            }
             else -> {
                 ft.addToBackStack(generateBackStackName(mBackStack.size + 1, destId))
                 true
