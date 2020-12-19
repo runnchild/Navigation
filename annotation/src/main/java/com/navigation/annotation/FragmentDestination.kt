@@ -8,7 +8,7 @@ annotation class FragmentDestination(
      * 页面标题，可以使用在toolBar上
      */
     val title: String = "",
-    val needLogin: Boolean = false,
+    val needLogin: Boolean = true,
     val isStarter: Boolean = false,
     val isHomeTab: Boolean = false,
     /**

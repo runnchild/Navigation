@@ -89,11 +89,27 @@ class FixFragmentNavigator(
             }
         }
 
-//        preFrag?.let {
-//            ft.hide(it)
+//        val preIsTab = NavGraphBuilder.isTab(preFrag?.tag?.toInt() ?: 0)
+//        if (preIsTab && NavGraphBuilder.isTab(destId)) {
+//            preFrag?.let {
+//                ft.hide(it)
+//            }
+//            ft.show(frag)
+//        } else {
+//            ft.replace(mContainerId, frag)
 //        }
-//        ft.show(frag)
-        ft.replace(mContainerId, frag, tag)
+
+//        if (isTab) {
+//        mFragmentManager.fragments.forEach { if (it !is NavHostFragment) ft.hide(it) }
+        ft.show(frag)
+//        if (preIsTab) {
+            preFrag?.let {
+                ft.hide(it)
+            }
+//        }
+//        } else {
+//            ft.replace(mContainerId, frag, tag)
+//        }
 
         ft.setPrimaryNavigationFragment(frag)
         val initialNavigation = mBackStack.isEmpty()
