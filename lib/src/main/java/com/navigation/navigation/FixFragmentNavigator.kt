@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.IdRes
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -76,8 +77,12 @@ class FixFragmentNavigator(
 
         val tag = destination.id.toString()
 
+        var frag: Fragment? = null
+        if ( NavGraphBuilder.isTab(destination.id)) {
+            frag = mFragmentManager.findFragmentByTag(tag)
+        }
         @Suppress("DEPRECATION")
-        val frag = (mFragmentManager.findFragmentByTag(tag) ?: instantiateFragment(
+         frag = (frag ?: instantiateFragment(
             mContext,
             mFragmentManager,
             className,
@@ -101,12 +106,13 @@ class FixFragmentNavigator(
 
 //        if (isTab) {
 //        mFragmentManager.fragments.forEach { if (it !is NavHostFragment) ft.hide(it) }
-        ft.show(frag)
+
 //        if (preIsTab) {
             preFrag?.let {
                 ft.hide(it)
             }
 //        }
+        ft.show(frag)
 //        } else {
 //            ft.replace(mContainerId, frag, tag)
 //        }
