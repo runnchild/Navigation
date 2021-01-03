@@ -258,13 +258,13 @@ class NavProcessor : AbstractProcessor() {
                 it.qualifiedName.toString(),
                 annotation.url,
                 annotation.needLogin,
-                annotation.isStarter,
+                false,
                 PAGE_TYPE_DIALOG,
-                annotation.isHomeTab,
+                false,
                 annotation.doc,
                 annotation.title,
-                annotation.popAnim,
-                annotation.animStyle
+                false,
+                0
             )
         }
     }
