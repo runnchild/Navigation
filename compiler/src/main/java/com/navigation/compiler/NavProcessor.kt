@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.navigation.annotation.ActivityDestination
+import com.navigation.annotation.DialogDestination
 import com.navigation.annotation.FragmentDestination
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.JavaFile
@@ -22,6 +23,9 @@ import javax.tools.FileObject
 import javax.tools.StandardLocation
 import kotlin.math.abs
 
+const val PAGE_TYPE_FRAGMENT = "fragment"
+const val PAGE_TYPE_ACTIVITY = "activity"
+const val PAGE_TYPE_DIALOG = "dialog"
 
 @Suppress("unused")
 @AutoService(Processor::class)
@@ -47,6 +51,7 @@ class NavProcessor : AbstractProcessor() {
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
         return mutableSetOf(
             ActivityDestination::class.java.canonicalName,
+            DialogDestination::class.java.canonicalName,
             FragmentDestination::class.java.canonicalName
         )
     }
@@ -55,10 +60,12 @@ class NavProcessor : AbstractProcessor() {
         messager?.printMessage(Diagnostic.Kind.NOTE, "start process")
         val activityElements = roundEnv?.getElementsAnnotatedWith(ActivityDestination::class.java)
         val fragmentElements = roundEnv?.getElementsAnnotatedWith(FragmentDestination::class.java)
+        val dialogElements = roundEnv?.getElementsAnnotatedWith(DialogDestination::class.java)
 
         val destMap = mutableMapOf<String, JsonObject>()
         val tabDestMap = mutableMapOf<String, JsonObject>()
         handleActivityElements(activityElements, destMap)
+        handleDialogElements(dialogElements, destMap)
         handleFragmentElements(fragmentElements, destMap, tabDestMap)
         val resource: FileObject?
         try {
@@ -201,7 +208,7 @@ class NavProcessor : AbstractProcessor() {
                 annotation.url,
                 annotation.needLogin,
                 annotation.isStarter,
-                true,
+                PAGE_TYPE_FRAGMENT,
                 annotation.isHomeTab,
                 annotation.doc,
                 annotation.title,
@@ -229,7 +236,30 @@ class NavProcessor : AbstractProcessor() {
                 annotation.url,
                 annotation.needLogin,
                 annotation.isStarter,
-                false,
+                PAGE_TYPE_ACTIVITY,
+                annotation.isHomeTab,
+                annotation.doc,
+                annotation.title,
+                annotation.popAnim,
+                annotation.animStyle
+            )
+        }
+    }
+
+    private fun handleDialogElements(
+        activityElements: MutableSet<out Element>?, destMap: MutableMap<String, JsonObject>
+    ) {
+        activityElements?.forEach {
+            it as TypeElement
+            val annotation = it.getAnnotation(DialogDestination::class.java)
+
+            addObj(
+                destMap,
+                it.qualifiedName.toString(),
+                annotation.url,
+                annotation.needLogin,
+                annotation.isStarter,
+                PAGE_TYPE_DIALOG,
                 annotation.isHomeTab,
                 annotation.doc,
                 annotation.title,
@@ -245,7 +275,7 @@ class NavProcessor : AbstractProcessor() {
         url: String,
         needLogin: Boolean,
         isStarter: Boolean,
-        isFragment: Boolean,
+        pageType: String,
         isHomeTab: Boolean,
         doc: String,
         title: String,
@@ -265,7 +295,7 @@ class NavProcessor : AbstractProcessor() {
             jsonObject.addProperty("popAnim", popAnim)
             jsonObject.addProperty("needLogin", needLogin)
             jsonObject.addProperty("isStarter", isStarter)
-            jsonObject.addProperty("isFragment", isFragment)
+            jsonObject.addProperty("pageType", pageType)
             jsonObject.addProperty("isHomeTab", isHomeTab)
             jsonObject.addProperty("doc", doc)
             jsonObject.addProperty("animStyle", animStyle)

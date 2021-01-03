@@ -7,7 +7,7 @@ class Destination(val url: String) {
     var id: Int = 0
     var needLogin = false
     var isStarter = false
-    var isFragment = false
+    var pageType:String = PAGE_TYPE_FRAGMENT
     var className: String= ""
     var isHomeTab = false
     var title: String = ""
