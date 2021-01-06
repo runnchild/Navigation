@@ -78,7 +78,7 @@ class FixFragmentNavigator(
         val tag = destination.id.toString()
 
         var frag: Fragment? = null
-        if ( NavGraphBuilder.isTab(destination.id)) {
+        if ( NavGraphBuilder.isTab(destination.id) || destination.id == NavGraphBuilder.startDestinationId) {
             frag = mFragmentManager.findFragmentByTag(tag)
         }
         @Suppress("DEPRECATION")

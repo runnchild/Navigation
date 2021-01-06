@@ -22,6 +22,7 @@ import java.io.InputStreamReader
 object NavGraphBuilder {
     var tabDestinations: HashMap<String, Destination>? = null
     var otherDestinations: HashMap<String, Destination>? = null
+    var startDestinationId = 0
 
     fun build(
         context: FragmentActivity,
@@ -148,6 +149,7 @@ object NavGraphBuilder {
                 navGraph.startDestination = destination.id
             }
             intercept?.invoke(navGraph, destination)
+            startDestinationId = navGraph.startDestination
             navGraph.addDestination(destination)
         }
         return navGraph
