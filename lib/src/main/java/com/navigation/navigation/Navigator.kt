@@ -1,13 +1,13 @@
 package com.navigation.navigation
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.Keep
-import androidx.navigation.AnimBuilder
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.NavOptionsBuilder
+import androidx.core.net.toUri
+import androidx.navigation.*
 import androidx.navigation.Navigator
 import com.rongc.navigation.R
+import java.util.regex.Pattern
 import kotlin.math.abs
 
 /**
@@ -61,5 +61,20 @@ object Navigator {
         exit = 0
         popEnter = 0
         popExit = 0
+    }
+}
+
+fun String.deepLink(vararg params: String?): Uri {
+    val uri = this.toUri()
+    return if (uri.queryParameterNames.size > 0) {
+        val fillInPattern = Pattern.compile("\\{(.+?)\\}")
+        val match = fillInPattern.matcher(this)
+        val uriBuilder = uri.buildUpon().clearQuery()
+        while (match.find()) {
+            uriBuilder.appendQueryParameter(match.group(1), params.getOrNull(0))
+        }
+        uriBuilder.build()
+    } else {
+        uri
     }
 }

@@ -128,7 +128,7 @@ class NavProcessor : AbstractProcessor() {
     private fun TypeSpec.Builder.generateType(destMap: MutableMap<String, JsonObject>) {
         destMap.keys.forEach {
             var toPath = ""
-            val split = it.split("/")
+            val split = it.split("/")//community/user_argue_list -> COMMUNITY_USER_ARGUE_LIST?USER_ID=
             val size = split.size
             split.forEachIndexed { index, path ->
                 toPath += path.toUpperCase(Locale.getDefault()) + if (size > 1 && index < size - 1) {
@@ -140,6 +140,11 @@ class NavProcessor : AbstractProcessor() {
                 destMap[it]?.getAsJsonPrimitive("doc")?.asString ?: destMap[it]?.getAsJsonPrimitive(
                     "title"
                 )?.asString
+            if (toPath.contains("?")) {
+                toPath = toPath.substring(0, toPath.indexOf("?"))
+            }
+            println("toPath=$toPath")
+
             val field = FieldSpec.builder(
                 String::class.java,
                 toPath,
