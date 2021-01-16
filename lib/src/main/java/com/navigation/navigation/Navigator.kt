@@ -19,7 +19,12 @@ import kotlin.math.abs
 @Keep
 object Navigator {
 
-    fun NavController.navigate(url: String, args: Bundle? = null, options: NavOptions? = null, navExtras: Navigator.Extras? = null) {
+    fun NavController.navigate(
+        url: String,
+        args: Bundle? = null,
+        options: NavOptions? = null,
+        navExtras: Navigator.Extras? = null
+    ) {
         navigate(url.destId(), args, options, navExtras)
     }
 
@@ -70,11 +75,26 @@ fun String.deepLink(vararg params: String?): Uri {
         val fillInPattern = Pattern.compile("\\{(.+?)\\}")
         val match = fillInPattern.matcher(this)
         val uriBuilder = uri.buildUpon().clearQuery()
+        var index = 0
         while (match.find()) {
-            uriBuilder.appendQueryParameter(match.group(1), params.getOrNull(0))
+            uriBuilder.appendQueryParameter(match.group(1), params.getOrNull(index++))
         }
         uriBuilder.build()
     } else {
         uri
+    }
+}
+
+fun <T> NavController?.observeCurrent(key: String, call: (T) -> Unit) {
+    this?.currentBackStackEntry?.run {
+        savedStateHandle.getLiveData<T>(key).observe(this) {
+            call(it)
+        }
+    }
+}
+
+fun <T> NavController?.notifyPreBack(key: String, value: T) {
+    this?.previousBackStackEntry?.run {
+        savedStateHandle.set(key, value)
     }
 }
