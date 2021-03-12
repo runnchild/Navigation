@@ -22,3 +22,4 @@
 -keepclassmembernames class androidx.navigation.fragment.FragmentNavigator {
     java.util.ArrayDeque.ArrayDeque mBackStack;
 }
+-keep class androidx.navigation.NavController {*;}
