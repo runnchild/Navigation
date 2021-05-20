@@ -31,9 +31,9 @@ Step 2. Add the dependency
 
 ```
 dependencies {
-   implementation 'com.github.runnchild:Navigation:Tag'
-   kapt 'com.github.runnchild:Compiler:Tag'
-   implementation "com.github.runnchild:Annotation:Tag"
+   implementation 'com.github.runnchild.Navigation:navigation:2.0.0'
+   kapt 'com.github.runnchild.Navigation:compiler:2.0.0'
+   implementation "com.github.runnchild.Navigation:annotation:2.0.0"
 }
 ```
 
