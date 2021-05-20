@@ -17,56 +17,44 @@ import kotlin.math.abs
  * @update
  */
 @Keep
-object Navigator {
 
-    fun NavController.navigate(
-        url: String,
-        args: Bundle? = null,
-        options: NavOptions? = null,
-        navExtras: Navigator.Extras? = null
-    ) {
-        navigate(url.destId(), args, options, navExtras)
+        /**
+         * @description 从当前页面弹出栈到目标页面
+         * @param inclusive 弹出是否包含给的页面
+         * @param url 页面url
+         * @author rongc
+         * @date 20-8-27
+         */
+fun NavController.popBackTo(url: String, inclusive: Boolean = false) {
+    popBackStack(url.destId(), inclusive)
+}
+
+fun NavOptionsBuilder.popUpTo(url: String, inclusive: Boolean = false) {
+    popUpTo(url.destId()) {
+        this.inclusive = inclusive
     }
+}
 
-    /**
-     * @description 从当前页面弹出栈到目标页面
-     * @param inclusive 弹出是否包含给的页面
-     * @param url 页面url
-     * @author rongc
-     * @date 20-8-27
-     */
-    fun NavController.popBackTo(url: String, inclusive: Boolean = false) {
-        popBackStack(url.destId(), inclusive)
-    }
+fun String.destId() = abs(hashCode())
 
+val slideAnim: AnimBuilder.() -> Unit = {
+    enter = R.anim.slide_enter
+    exit = R.anim.slide_exit
+    popEnter = R.anim.slide_pop_enter
+    popExit = R.anim.slide_pop_exit
+}
 
-    fun NavOptionsBuilder.popUpTo(url: String, inclusive: Boolean = false) {
-        popUpTo(url.destId()) {
-            this.inclusive = inclusive
-        }
-    }
-
-    fun String.destId() = abs(hashCode())
-
-    val slideAnim: AnimBuilder.() -> Unit = {
-        enter = R.anim.slide_enter
-        exit = R.anim.slide_exit
-        popEnter = R.anim.slide_pop_enter
-        popExit = R.anim.slide_pop_exit
-    }
-
-    val popAnim: AnimBuilder.() -> Unit = {
-        enter = R.anim.pop_enter
-        exit = 0//R.anim.pop_exit
-        popEnter = 0//R.anim.pop_pop_enter
-        popExit = R.anim.pop_pop_exit
-    }
-    val nonAnim: AnimBuilder.() -> Unit = {
-        enter = 0
-        exit = 0
-        popEnter = 0
-        popExit = 0
-    }
+val popAnim: AnimBuilder.() -> Unit = {
+    enter = R.anim.pop_enter
+    exit = 0//R.anim.pop_exit
+    popEnter = 0//R.anim.pop_pop_enter
+    popExit = R.anim.pop_pop_exit
+}
+val nonAnim: AnimBuilder.() -> Unit = {
+    enter = 0
+    exit = 0
+    popEnter = 0
+    popExit = 0
 }
 
 fun String.deepLink(vararg params: String?): Uri {
@@ -83,6 +71,31 @@ fun String.deepLink(vararg params: String?): Uri {
     } else {
         uri
     }
+}
+
+fun NavController.navigateBy(
+    url: String,
+    args: Bundle? = null,
+    options: NavOptions? = null,
+    navExtras: Navigator.Extras? = null
+) {
+    val uri = url.toUri()
+    var bundle = args
+    if (uri.queryParameterNames.size > 0) {
+        bundle = args ?: Bundle()
+        uri.queryParameterNames.forEach {
+            bundle.putString(it, uri.getQueryParameter(it))
+        }
+    }
+    navigate(url.destId(), bundle, options, navExtras)
+}
+
+fun NavController.navigateBy(
+    uri: Uri,
+    options: NavOptions? = null,
+    navExtras: Navigator.Extras? = null
+) {
+    navigate(uri, options, navExtras)
 }
 
 fun <T> NavController?.observeCurrent(key: String, call: (T) -> Unit) {
