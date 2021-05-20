@@ -1,7 +1,7 @@
 import com.rongc.plugin.config.Deps
 apply plugin: 'com.rongc.lib'
 ext {
-    navigationVersion='2.3.1'
+    navigationVersion='2.3.2'
 }
 
 dependencies {
