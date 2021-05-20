@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.navigation.annotation.FragmentDestination
 import com.navigation.navigation.Navigator.navigate
-import com.rongc.navigator.NavigationNavigator
+import com.rongc.navigator.NavigationAppNavigator
 
 /**
  * @description 作用描述
@@ -47,7 +47,7 @@ class OneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<View>(R.id.tv_btn).setOnClickListener {
-            findNavController().navigate(NavigationNavigator.NAVIGATION_TWO)
+            findNavController().navigate(NavigationAppNavigator.NAVIGATION_TWO)
         }
     }
 }
