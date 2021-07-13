@@ -266,19 +266,7 @@ class NewFragment : Fragment() {
 ## 六、写在最后
 
 目前商业项目应该很少人使用单个MainActivity搭配多个Fragment的方式写吧，刚看到JetPack的Navigation时还是很震撼的，遗憾的是无法在组件化的项目中使用。
-本着爱瞎折腾精神改造了下，也在我自己的项目中使用，当然也碰到许多坑：
-
-- 1. 默认的Fragment添加方式为replace，这就有点不理解了，每次打开新页面后返回上个页面都会被移除和重新添加？页面控件和数据都要重新创建和请求？显然是不合理的。
-    此项目我改成了hide/show方式。
-- 2. 当Fragment添加方式为hide/show时，旧页面和新打开的页面生命周期方法并不是成对出现，（旧页面并不会调用 onPause()方法，不过可通过onHiddenChanged()判断），
-    顺序为打开新页面时A -> B： A.onHiddenChanged(true)->B.onResume()。
-    返回B->A： A.onHiddenChanged(false)->B.onPause()->B.onHiddenChanged(true)->B.onDestroy().
-    也就是返回时并不是B的onPause或者onHiddenChanged(true)先调用，这在做友盟页面统计时会提示生命周期方法并没有成对调用。
-- 3. 当Fragment添加方式为hide/show时，如果图片加载框架为Fresco，在打开新页面时旧页面的图片会先隐藏起来，观感上就是页面图片部分白一下再打开页面。真让人头秃。。。
-- 4. 如果应用首次安装时打开的第一个页面是引导或者欢迎页，之后再也不会打开这个页面，那么这个页面就不适合设置为startDestination。可把登录页面设为startDestination，
-    并在onViewCreate中判断是否是首次打开决定要不要跳转到引导。
-    其实并不一定项目只能一个Activity和多个Fragment，也可以根据业务模块分成多个Activity，每个Activity再对应多个Fragment，只不过每个Activity都要配置基本用法的第一步。
-- 5. 其他暂没遇到大问题，不过不代表没有哈，如果要在商业项目中使用请考虑好利弊。如果各位大佬有解决方案或者其他建议还请不吝赐教。欢迎star和fork;
+本着爱瞎折腾精神改造了下
 
 另可关注另外两个项目 
 
