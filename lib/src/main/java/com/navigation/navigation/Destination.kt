@@ -11,6 +11,5 @@ class Destination(val url: String) {
     var className: String= ""
     var isHomeTab = false
     var title: String = ""
-    var popAnim = false
     var animStyle = ANIM_DEFAULT
 }

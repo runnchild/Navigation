@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.*
 import androidx.navigation.fragment.DialogFragmentNavigator
+import androidx.navigation.fragment.FragmentNavigator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -92,10 +93,10 @@ object NavGraphBuilder {
     ): NavGraph {
         val provider = controller.navigatorProvider
         val activityNavigator = provider.getNavigator(ActivityNavigator::class.java)
-        val tabNavigator = FixFragmentNavigator(context, context.supportFragmentManager, containerId)
-        provider.addNavigator(tabNavigator)
         val dialogNavigator = provider.getNavigator(DialogFragmentNavigator::class.java)
-        provider.addNavigator(dialogNavigator)
+//        val tabNavigator = FixFragmentNavigator(context, context.supportFragmentManager, containerId)
+//        provider.addNavigator(tabNavigator)
+        val tabNavigator = provider.getNavigator(FragmentNavigator::class.java)
 
         val navGraph = try {
             controller.graph
@@ -104,29 +105,27 @@ object NavGraphBuilder {
         }
 
         destinationMap.values.forEach {
-            val destination = when(it.pageType) {
+            val destination = when (it.pageType) {
                 PAGE_TYPE_FRAGMENT -> {
                     tabNavigator.createDestination().apply {
                         className = it.className
 
                         val anim = when (it.animStyle) {
-                            ANIM_NON -> {
-                                Navigator.nonAnim
-                            }
-                            0, ANIM_DEFAULT -> {
-                                Navigator.slideAnim
+                            ANIM_DEFAULT -> {
+                                slideAnim
                             }
                             ANIM_POP -> {
-                                Navigator.popAnim
+                                popAnim
                             }
-                            else -> if (it.popAnim) {
-                                Navigator.popAnim
-                            } else {
-                                Navigator.slideAnim
+                            else -> {//ANIM_NON
+                                nonAnim
                             }
                         }
                         putAction(it.id, NavAction(it.id, navOptions {
                             anim(anim)
+                            if (it.isHomeTab) {
+                                launchSingleTop = true
+                            }
                         }))
                     }
                 }

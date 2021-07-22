@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.navigation.annotation.FragmentDestination
+import com.navigation.navigation.ANIM_POP
 
 /**
  * @description 作用描述
@@ -16,7 +17,7 @@ import com.navigation.annotation.FragmentDestination
  * @date 20-8-28$
  * @update
  */
-@FragmentDestination("navigation/two", popAnim = true)
+@FragmentDestination("navigation/two", animStyle = ANIM_POP)
 class TwoFragment: Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,

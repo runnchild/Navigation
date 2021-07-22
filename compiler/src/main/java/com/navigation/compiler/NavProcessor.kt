@@ -217,7 +217,6 @@ class NavProcessor : AbstractProcessor() {
                 annotation.isHomeTab,
                 annotation.doc,
                 annotation.title,
-                annotation.popAnim,
                 annotation.animStyle
             )?.let { jsonObj ->
                 if (annotation.isHomeTab) {
@@ -245,7 +244,6 @@ class NavProcessor : AbstractProcessor() {
                 annotation.isHomeTab,
                 annotation.doc,
                 annotation.title,
-                annotation.popAnim,
                 annotation.animStyle
             )
         }
@@ -268,7 +266,6 @@ class NavProcessor : AbstractProcessor() {
                 false,
                 annotation.doc,
                 annotation.title,
-                false,
                 0
             )
         }
@@ -284,7 +281,6 @@ class NavProcessor : AbstractProcessor() {
         isHomeTab: Boolean,
         doc: String,
         title: String,
-        popAnim: Boolean,
         animStyle: Int
     ): JsonObject? {
         return if (destMap.containsKey(url)) {
@@ -297,7 +293,6 @@ class NavProcessor : AbstractProcessor() {
             jsonObject.addProperty("className", clzName)
             jsonObject.addProperty("url", uri)
             jsonObject.addProperty("title", title)
-            jsonObject.addProperty("popAnim", popAnim)
             jsonObject.addProperty("needLogin", needLogin)
             jsonObject.addProperty("isStarter", isStarter)
             jsonObject.addProperty("pageType", pageType)

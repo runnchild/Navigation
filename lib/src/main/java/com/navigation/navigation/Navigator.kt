@@ -74,10 +74,8 @@ fun String.deepLink(vararg params: String?): Uri {
 }
 
 fun NavController.navigateBy(
-    url: String,
-    args: Bundle? = null,
-    options: NavOptions? = null,
-    navExtras: Navigator.Extras? = null
+    url: String, args: Bundle? = null,
+    options: NavOptions? = null, navExtras: Navigator.Extras? = null
 ) {
     val uri = url.toUri()
     var bundle = args
@@ -87,13 +85,40 @@ fun NavController.navigateBy(
             bundle.putString(it, uri.getQueryParameter(it))
         }
     }
-    navigate(url.destId(), bundle, options, navExtras)
+
+    val destId = url.destId()
+//    val newOption = mapAnimOption(options, destId)
+    navigate(destId, bundle, options, navExtras)
+}
+
+private fun mapAnimOption(options: NavOptions?, destId: Int) = if (options == null) {
+    navOptions {
+        anim(
+            when (NavGraphBuilder.findCustomDestination(destId)?.animStyle) {
+                ANIM_DEFAULT -> slideAnim
+                ANIM_POP -> popAnim
+                else -> nonAnim
+            }
+        )
+    }
+} else {
+    val anim = options.enterAnim + options.exitAnim + options.popEnterAnim + options.popExitAnim
+    if (anim == 0) {
+        navOptions {
+            anim(slideAnim)
+            launchSingleTop = options.shouldLaunchSingleTop()
+            popUpTo = options.popUpTo
+            popUpTo(options.popUpTo) {
+                inclusive = options.isPopUpToInclusive
+            }
+        }
+    } else {
+        options
+    }
 }
 
 fun NavController.navigateBy(
-    uri: Uri,
-    options: NavOptions? = null,
-    navExtras: Navigator.Extras? = null
+    uri: Uri, options: NavOptions? = null, navExtras: Navigator.Extras? = null
 ) {
     navigate(uri, options, navExtras)
 }
