@@ -11,20 +11,12 @@ import java.util.regex.Pattern
 import kotlin.math.abs
 
 /**
- * @description 作用描述
+ * @description 从当前页面弹出栈到目标页面
+ * @param url 页面url
+ * @param inclusive 弹出是否包含url所在的页面
  * @author rongc
- * @date 20-8-28$
- * @update
+ * @date 20-8-27
  */
-@Keep
-
-        /**
-         * @description 从当前页面弹出栈到目标页面
-         * @param inclusive 弹出是否包含给的页面
-         * @param url 页面url
-         * @author rongc
-         * @date 20-8-27
-         */
 fun NavController.popBackTo(url: String, inclusive: Boolean = false) {
     popBackStack(url.destId(), inclusive)
 }
@@ -36,26 +28,6 @@ fun NavOptionsBuilder.popUpTo(url: String, inclusive: Boolean = false) {
 }
 
 fun String.destId() = abs(hashCode())
-
-val slideAnim: AnimBuilder.() -> Unit = {
-    enter = R.anim.slide_enter
-    exit = R.anim.slide_exit
-    popEnter = R.anim.slide_pop_enter
-    popExit = R.anim.slide_pop_exit
-}
-
-val popAnim: AnimBuilder.() -> Unit = {
-    enter = R.anim.pop_enter
-    exit = 0//R.anim.pop_exit
-    popEnter = 0//R.anim.pop_pop_enter
-    popExit = R.anim.pop_pop_exit
-}
-val nonAnim: AnimBuilder.() -> Unit = {
-    enter = 0
-    exit = 0
-    popEnter = 0
-    popExit = 0
-}
 
 fun String.deepLink(vararg params: String?): Uri {
     val uri = this.toUri()
@@ -86,15 +58,15 @@ fun NavController.navigateBy(
         }
     }
 
-    val destId = url.destId()
-//    val newOption = mapAnimOption(options, destId)
-    navigate(destId, bundle, options, navExtras)
+    val destination = NavGraphBuilder.findDestination(url)
+    val newOption = mapAnimOption(options, destination)
+    navigate(destination?.id ?: url.destId(), bundle, newOption, navExtras)
 }
 
-private fun mapAnimOption(options: NavOptions?, destId: Int) = if (options == null) {
+private fun mapAnimOption(options: NavOptions?, destination: Destination?) = if (options == null) {
     navOptions {
         anim(
-            when (NavGraphBuilder.findCustomDestination(destId)?.animStyle) {
+            when (destination?.animStyle) {
                 ANIM_DEFAULT -> slideAnim
                 ANIM_POP -> popAnim
                 else -> nonAnim
@@ -120,7 +92,10 @@ private fun mapAnimOption(options: NavOptions?, destId: Int) = if (options == nu
 fun NavController.navigateBy(
     uri: Uri, options: NavOptions? = null, navExtras: Navigator.Extras? = null
 ) {
-    navigate(uri, options, navExtras)
+    val url = "${uri.scheme}://${uri.host}${uri.path}"
+    val destination = NavGraphBuilder.findDestination(url)
+    val newOptions = mapAnimOption(options, destination)
+    navigate(uri, newOptions, navExtras)
 }
 
 fun <T> NavController?.observeCurrent(key: String, call: (T) -> Unit) {
