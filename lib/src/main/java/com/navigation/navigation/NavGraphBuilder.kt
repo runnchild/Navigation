@@ -208,4 +208,12 @@ object NavGraphBuilder {
         return tabDestinations?.values?.firstOrNull { id == it.id }
             ?: otherDestinations?.values?.firstOrNull { id == it.id }
     }
+
+    fun findDestination(url: String): Destination? {
+        return tabDestinations?.keys?.firstOrNull {
+            it.startsWith(url)
+        }?.let { tabDestinations!![it] } ?: otherDestinations?.keys?.firstOrNull {
+            it.startsWith(url)
+        }?.let { otherDestinations!![it] }
+    }
 }

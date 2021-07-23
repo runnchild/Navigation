@@ -18,5 +18,5 @@ annotation class FragmentDestination(
     /**
      * ANIMATE_NON, ANIMATE_DEFAULT, ANIMATE_POP
      */
-    val animStyle:Int = 2
+    val animStyle:Int = 0
 )
