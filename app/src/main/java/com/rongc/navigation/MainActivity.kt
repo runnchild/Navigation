@@ -24,11 +24,7 @@ class MainActivity : AppCompatActivity() {
         NavGraphBuilder.build(this, container.findNavController(), R.id.containerView)
     }
 
-    override fun onNavigateUp(): Boolean {
+    override fun onSupportNavigateUp(): Boolean {
         return controller.navigateUp() && super.onNavigateUp()
-    }
-
-    override fun onBackPressed() {
-        controller.navigateUp()
     }
 }

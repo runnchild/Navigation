@@ -45,9 +45,9 @@ object NavGraphBuilder {
             mutableMapOf.putAll(it)
         }
         controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
-            if (startDestination == 0) {
-                startDestination = tabDestinations?.values?.firstOrNull()?.id
-                    ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
+            if (startDestinationId == 0) {
+                setStartDestination(tabDestinations?.values?.firstOrNull()?.id
+                    ?: otherDestinations?.values?.firstOrNull()?.id ?: 0)
             }
         }
     }
@@ -108,7 +108,7 @@ object NavGraphBuilder {
             val destination = when (it.pageType) {
                 PAGE_TYPE_FRAGMENT -> {
                     tabNavigator.createDestination().apply {
-                        className = it.className
+                        setClassName(it.className)
 
                         val anim = when (it.animStyle) {
                             ANIM_DEFAULT -> {
@@ -131,7 +131,7 @@ object NavGraphBuilder {
                 }
                 PAGE_TYPE_DIALOG -> {
                     dialogNavigator.createDestination().apply {
-                        className = it.className
+                        setClassName(it.className)
                     }
                 }
                 else -> {
@@ -145,10 +145,10 @@ object NavGraphBuilder {
             destination.id = it.id
             destination.addDeepLink(it.url)
             if (it.isStarter) {
-                navGraph.startDestination = destination.id
+                navGraph.setStartDestination(destination.id)
             }
             intercept?.invoke(navGraph, destination)
-            startDestinationId = navGraph.startDestination
+            startDestinationId = navGraph.startDestinationId
             navGraph.addDestination(destination)
         }
         return navGraph

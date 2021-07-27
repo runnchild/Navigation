@@ -1,12 +1,12 @@
 import com.rongc.plugin.config.Deps
 apply plugin: 'com.rongc.lib'
 ext {
-    navigationVersion='2.3.2'
+    navigationVersion='2.4.0-alpha05'
 }
 
 dependencies {
     api ("androidx.navigation:navigation-fragment-ktx:$navigationVersion") {
-        exclude group: 'androidx.fragment'
+//        exclude group: 'androidx.fragment'
     }
     api "androidx.navigation:navigation-ui-ktx:$navigationVersion"
     implementation Deps.Lib.Gson

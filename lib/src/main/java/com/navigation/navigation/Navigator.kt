@@ -79,9 +79,8 @@ private fun mapAnimOption(options: NavOptions?, destination: Destination?) = if 
         navOptions {
             anim(slideAnim)
             launchSingleTop = options.shouldLaunchSingleTop()
-            popUpTo = options.popUpTo
-            popUpTo(options.popUpTo) {
-                inclusive = options.isPopUpToInclusive
+            popUpTo(options.popUpToId) {
+                inclusive = options.isPopUpToInclusive()
             }
         }
     } else {
