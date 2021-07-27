@@ -58,7 +58,7 @@ fun NavController.navigateBy(
         }
     }
 
-    val destination = NavGraphBuilder.findDestination(url)
+    val destination = NavGraphBuilder.findDestination("${uri.host}${uri.path}")
     val newOption = mapAnimOption(options, destination)
     navigate(destination?.id ?: url.destId(), bundle, newOption, navExtras)
 }
@@ -92,7 +92,7 @@ private fun mapAnimOption(options: NavOptions?, destination: Destination?) = if 
 fun NavController.navigateBy(
     uri: Uri, options: NavOptions? = null, navExtras: Navigator.Extras? = null
 ) {
-    val url = "${uri.scheme}://${uri.host}${uri.path}"
+    val url = "${uri.host}${uri.path}"
     val destination = NavGraphBuilder.findDestination(url)
     val newOptions = mapAnimOption(options, destination)
     navigate(uri, newOptions, navExtras)

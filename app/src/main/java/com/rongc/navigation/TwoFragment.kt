@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import com.navigation.annotation.FragmentDestination
 import com.navigation.navigation.ANIM_POP
+import com.navigation.navigation.navigateBy
+import com.rongc.navigator.NavigationAppNavigator
 
 /**
  * @description 作用描述
@@ -30,6 +33,10 @@ class TwoFragment: Fragment() {
             gravity = Gravity.CENTER
             layoutParams = ViewGroup.LayoutParams(-1, -1)
             setBackgroundColor(Color.BLUE)
+        }.apply {
+            setOnClickListener {
+                findNavController().navigateBy(NavigationAppNavigator.NAVIGATION_ONE)
+            }
         }
     }
 }

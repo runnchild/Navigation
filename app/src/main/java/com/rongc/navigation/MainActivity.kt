@@ -27,4 +27,8 @@ class MainActivity : AppCompatActivity() {
     override fun onNavigateUp(): Boolean {
         return controller.navigateUp() && super.onNavigateUp()
     }
+
+    override fun onBackPressed() {
+        controller.navigateUp()
+    }
 }
