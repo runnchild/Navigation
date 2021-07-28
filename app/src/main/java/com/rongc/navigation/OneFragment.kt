@@ -45,7 +45,7 @@ class OneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<View>(R.id.tv_btn).setOnClickListener {
-            findNavController().navigateBy(NavigationAppNavigator.NAVIGATION_TWO)
+            findNavController().navigateBy(NavigationAppNavigator.HOME_HOME)
         }
     }
 }
