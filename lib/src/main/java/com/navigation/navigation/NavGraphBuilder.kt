@@ -2,6 +2,7 @@ package com.navigation.navigation
 
 import android.content.ComponentName
 import android.content.Context
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.*
 import androidx.navigation.fragment.DialogFragmentNavigator
@@ -25,10 +26,10 @@ object NavGraphBuilder {
     var otherDestinations: HashMap<String, Destination>? = null
     var startDestinationId = 0
 
+    private val modulesDestination = hashMapOf<String, HashMap<String, Destination>>()
+
     fun build(
-        context: FragmentActivity,
-        controller: NavController,
-        containerId: Int,
+        context: FragmentActivity, controller: NavController, containerId: Int,
         intercept: ((NavGraph, NavDestination) -> Unit)? = null
     ) {
         val mutableMapOf = mutableMapOf<String, Destination>()
@@ -44,65 +45,49 @@ object NavGraphBuilder {
         otherDestinations?.let {
             mutableMapOf.putAll(it)
         }
-        controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
-            if (startDestinationId == 0) {
-                setStartDestination(tabDestinations?.values?.firstOrNull()?.id
-                    ?: otherDestinations?.values?.firstOrNull()?.id ?: 0)
+
+        mutableMapOf.keys.forEach {
+           val map = modulesDestination.getOrPut(it.toUri().pathSegments[0] ?: "") {
+                hashMapOf(it to mutableMapOf[it]!!)
             }
-        }
-    }
-
-    fun buildTab(
-        context: FragmentActivity,
-        controller: NavController,
-        containerId: Int,
-        intercept: ((NavGraph, NavDestination) -> Unit)? = null
-    ) {
-        if (tabDestinations == null) {
-            tabDestinations = parseDestinationMap(context, "destination/tab")
-        }
-        controller.graph =
-            build(context, controller, containerId, tabDestinations ?: return, intercept)
-    }
-
-    fun buildOther(
-        context: FragmentActivity,
-        controller: NavController,
-        containerId: Int,
-        intercept: ((NavGraph, NavDestination) -> Unit)? = null
-    ) {
-        if (otherDestinations == null) {
-            otherDestinations = parseDestinationMap(context, "destination")
+            map[it] = mutableMapOf[it]!!
         }
 
-        val graph = build(context, controller, containerId, otherDestinations ?: return, intercept)
-
-        try {
-            controller.graph
-        } catch (e: IllegalStateException) {
-            controller.graph = graph
+        val rootGraph = NavGraph(NavGraphNavigator(controller.navigatorProvider))
+        modulesDestination.keys.forEach {
+            rootGraph.addDestination(
+                build(context, controller, containerId, modulesDestination[it]!!, intercept).apply {
+                    if (startDestinationId == 0) {
+                        setStartDestination(
+                            tabDestinations?.values?.firstOrNull()?.id
+                                ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
+                        )
+                    }
+                }
+            )
         }
+        rootGraph.setStartDestination("http://navigation/one".destId())
+        controller.graph = rootGraph
+//        controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
+//            if (startDestinationId == 0) {
+//                setStartDestination(
+//                    tabDestinations?.values?.firstOrNull()?.id
+//                        ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
+//                )
+//            }
+//        }
     }
 
     private fun build(
-        context: FragmentActivity,
-        controller: NavController,
-        containerId: Int,
-        destinationMap: Map<String, Destination>,
-        intercept: ((NavGraph, NavDestination) -> Unit)?
+        context: FragmentActivity, controller: NavController, containerId: Int,
+        destinationMap: Map<String, Destination>, intercept: ((NavGraph, NavDestination) -> Unit)?
     ): NavGraph {
         val provider = controller.navigatorProvider
         val activityNavigator = provider.getNavigator(ActivityNavigator::class.java)
         val dialogNavigator = provider.getNavigator(DialogFragmentNavigator::class.java)
-//        val tabNavigator = FixFragmentNavigator(context, context.supportFragmentManager, containerId)
-//        provider.addNavigator(tabNavigator)
         val tabNavigator = provider.getNavigator(FragmentNavigator::class.java)
 
-        val navGraph = try {
-            controller.graph
-        } catch (e: IllegalStateException) {
-            NavGraph(NavGraphNavigator(provider))
-        }
+        val navGraph = NavGraph(NavGraphNavigator(provider))
 
         destinationMap.values.forEach {
             val destination = when (it.pageType) {
@@ -151,12 +136,12 @@ object NavGraphBuilder {
             startDestinationId = navGraph.startDestinationId
             navGraph.addDestination(destination)
         }
+        navGraph.id = navGraph.startDestinationId
         return navGraph
     }
 
     private fun parseDestinationMap(
-        context: FragmentActivity,
-        path: String
+        context: FragmentActivity, path: String
     ): HashMap<String, Destination>? {
         val stringBuilder = StringBuilder()
         val list = context.assets.list(path)?.filter { it.endsWith(".json") }
