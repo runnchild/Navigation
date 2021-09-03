@@ -2,11 +2,8 @@ package com.navigation.navigation
 
 import android.net.Uri
 import android.os.Bundle
-import androidx.annotation.Keep
 import androidx.core.net.toUri
 import androidx.navigation.*
-import androidx.navigation.Navigator
-import com.rongc.navigation.R
 import java.util.regex.Pattern
 import kotlin.math.abs
 
@@ -75,7 +72,7 @@ private fun mapAnimOption(options: NavOptions?, destination: Destination?) = if 
     }
 } else {
     val anim = options.enterAnim + options.exitAnim + options.popEnterAnim + options.popExitAnim
-    if (anim == 0) {
+    if (anim == 0 || anim == -4) {
         navOptions {
             anim(slideAnim)
             launchSingleTop = options.shouldLaunchSingleTop()

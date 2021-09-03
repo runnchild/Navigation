@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
-import androidx.databinding.DataBindingUtil
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -12,8 +11,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.navigation.navigation.NavGraphBuilder
 import com.navigation.navigation.destId
-import com.navigation.navigation.navigateBy
-import com.rongc.navigation.databinding.ActivityMainBinding
 import com.rongc.navigator.NavigationAppNavigator
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         controller = container.findNavController()
         val bottomBar = findViewById<BottomNavigationView>(R.id.bottom_bar)
-//        bottomBar.setupWithNavController(controller)
+        bottomBar.setupWithNavController(controller)
         bottomBar.setOnItemSelectedListener {
             val destination = when (it.itemId) {
                 R.id.home -> NavigationAppNavigator.HOME_HOME

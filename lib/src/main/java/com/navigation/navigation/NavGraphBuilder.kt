@@ -30,7 +30,7 @@ object NavGraphBuilder {
 
     fun build(
         context: FragmentActivity, controller: NavController, containerId: Int,
-        intercept: ((NavGraph, NavDestination) -> Unit)? = null
+        intercept: ((NavGraph, NavDestination) -> Unit)
     ) {
         val mutableMapOf = mutableMapOf<String, Destination>()
         if (tabDestinations == null) {
@@ -47,35 +47,38 @@ object NavGraphBuilder {
         }
 
         mutableMapOf.keys.forEach {
-           val map = modulesDestination.getOrPut(it.toUri().pathSegments[0] ?: "") {
+            val map = modulesDestination.getOrPut(it.toUri().pathSegments[0] ?: "") {
                 hashMapOf(it to mutableMapOf[it]!!)
             }
             map[it] = mutableMapOf[it]!!
         }
 
-        val rootGraph = NavGraph(NavGraphNavigator(controller.navigatorProvider))
-        modulesDestination.keys.forEach {
-            rootGraph.addDestination(
-                build(context, controller, containerId, modulesDestination[it]!!, intercept).apply {
-                    if (startDestinationId == 0) {
-                        setStartDestination(
-                            tabDestinations?.values?.firstOrNull()?.id
-                                ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
-                        )
-                    }
-                }
-            )
-        }
-        rootGraph.setStartDestination("http://navigation/one".destId())
-        controller.graph = rootGraph
-//        controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
-//            if (startDestinationId == 0) {
-//                setStartDestination(
-//                    tabDestinations?.values?.firstOrNull()?.id
-//                        ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
-//                )
-//            }
+//        val rootGraph = NavGraph(NavGraphNavigator(controller.navigatorProvider))
+//        modulesDestination.keys.forEach {
+//            rootGraph.addDestination(
+//                build(context, controller, containerId, modulesDestination[it]!!, null).apply {
+////                    forEach { des ->
+////                        intercept(this, des)
+////                    }
+//                    if (startDestinationId == 0) {
+//                        setStartDestination(nodes.keyAt(0))
+//                        id = startDestinationId+1
+//                    }
+//                }
+//            )
 //        }
+//        rootGraph.forEach {
+//            intercept.invoke(rootGraph, it)
+//        }
+//        controller.graph = rootGraph
+        controller.graph = build(context, controller, containerId, mutableMapOf, intercept).apply {
+            if (startDestinationId == 0) {
+                setStartDestination(
+                    tabDestinations?.values?.firstOrNull()?.id
+                        ?: otherDestinations?.values?.firstOrNull()?.id ?: 0
+                )
+            }
+        }
     }
 
     private fun build(
@@ -129,14 +132,16 @@ object NavGraphBuilder {
             destination.label = it.title
             destination.id = it.id
             destination.addDeepLink(it.url)
+            if (it.isHomeTab) {
+                navGraph.id = destination.id+1
+            }
             if (it.isStarter) {
+                startDestinationId = destination.id
                 navGraph.setStartDestination(destination.id)
             }
             intercept?.invoke(navGraph, destination)
-            startDestinationId = navGraph.startDestinationId
             navGraph.addDestination(destination)
         }
-        navGraph.id = navGraph.startDestinationId
         return navGraph
     }
 
